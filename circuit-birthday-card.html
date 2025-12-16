@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Surprise</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    /* Page 1 Styles */
+    #page1 {
+      background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      max-width: 800px;
+      width: 100%;
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      border: 2px solid rgba(168, 85, 247, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .gift-icon {
+      font-size: 64px;
+      animation: bounce 1s infinite;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #fbbf24, #ec4899, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: #d8b4fe;
+    }
+
+    .circuit-board {
+      position: relative;
+      background: linear-gradient(135deg, #064e3b, #134e4a);
+      border-radius: 16px;
+      padding: 40px;
+      border: 4px solid rgba(234, 179, 8, 0.5);
+      margin-bottom: 30px;
+      height: 200px;
+    }
+
+    .battery {
+      position: absolute;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 64px;
+      height: 96px;
+      background: linear-gradient(180deg, #ef4444, #b91c1c);
+      border-radius: 8px;
+      border: 2px solid #7f1d1d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      color: white;
+      font-weight: bold;
+    }
+
+    .battery-plus { font-size: 24px; }
+    .battery-voltage { font-size: 12px; }
+    .battery-minus { font-size: 24px; }
+
+    .wire-1 {
+      position: absolute;
+      left: 96px;
+      top: 50%;
+      width: 128px;
+      height: 4px;
+      background: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    .switch-btn {
+      position: absolute;
+      left: 224px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+    }
+
+    .switch-btn:hover:not(.on) {
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .switch-btn.on {
+      background: linear-gradient(135deg, #4ade80, #16a34a);
+      transform: translateY(-50%) scale(1.1);
+      animation: pulse 2s infinite;
+    }
+
+    .wire-2 {
+      position: absolute;
+      left: 320px;
+      top: 50%;
+      width: 128px;
+      height: 4px;
+      background: #6b7280;
+      transition: all 0.5s;
+    }
+
+    .wire-2.active {
+      background: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    .bulb {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #374151;
+      transition: all 0.5s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .bulb.lit {
+      background: linear-gradient(135deg, #fde047, #eab308);
+      box-shadow: 0 0 40px rgba(234, 179, 8, 0.8);
+      animation: pulse 2s infinite;
+    }
+
+    .bulb::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .bulb-icon {
+      font-size: 40px;
+      z-index: 1;
+    }
+
+    .wire-3 {
+      position: absolute;
+      left: 96px;
+      bottom: 32px;
+      width: calc(100% - 128px);
+      height: 4px;
+      background: #6b7280;
+      transition: all 0.5s;
+    }
+
+    .wire-3.active {
+      background: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    .instruction {
+      text-align: center;
+      color: #d8b4fe;
+      font-size: 18px;
+      animation: pulse 2s infinite;
+    }
+
+    /* Page 2 Styles */
+    #page2 {
+      background: linear-gradient(135deg, #ec4899, #a855f7, #6366f1);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+      filter: blur(40px);
+      opacity: 0.3;
+      animation: pulse 8s infinite;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 32px;
+      animation: bounce 3s infinite;
+      pointer-events: none;
+    }
+
+    .birthday-card {
+      position: relative;
+      max-width: 900px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(30px);
+      border-radius: 24px;
+      padding: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .success-badge {
+      display: inline-block;
+      background: #22c55e;
+      border-radius: 50%;
+      padding: 16px;
+      margin-bottom: 20px;
+      animation: bounce 1s infinite;
+    }
+
+    .success-badge svg {
+      width: 48px;
+      height: 48px;
+      color: white;
+    }
+
+    .success-text {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      animation: pulse 2s infinite;
+    }
+
+    .main-title {
+      font-size: 60px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #fde047, #fbcfe8, #ddd6fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .name {
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 30px;
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .message-box {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .message {
+      font-size: 24px;
+      color: white;
+      line-height: 1.8;
+      font-weight: 500;
+    }
+
+    .highlight-yellow { color: #fde047; font-weight: bold; }
+    .highlight-green { color: #86efac; font-weight: bold; }
+    .highlight-pink { color: #fbcfe8; font-weight: bold; }
+    .highlight-purple { color: #ddd6fe; font-weight: bold; }
+
+    .heart { font-size: 36px; margin-top: 20px; }
+
+    .special-message {
+      background: linear-gradient(90deg, #fbbf24, #ec4899);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .special-message p {
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    .emoji-row {
+      font-size: 48px;
+      animation: bounce 2s infinite;
+      margin-top: 20px;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      font-size: 24px;
+      animation: fall 3s linear;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-20px); }
+      100% { transform: translateY(100vh); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1: Interactive Circuit -->
+  <div id="page1" class="page active">
+    <div class="card">
+      <div class="header">
+        <div class="gift-icon">🎁</div>
+        <h1 class="title">🎁 Surprise Awaits! 🎁</h1>
+        <p class="subtitle">Connect the circuit to unwrap your surprise</p>
+      </div>
+
+      <div class="circuit-board">
+        <div class="battery">
+          <div class="battery-plus">+</div>
+          <div class="battery-voltage">9V</div>
+          <div class="battery-minus">−</div>
+        </div>
+        
+        <div class="wire-1"></div>
+        
+        <button class="switch-btn" id="switch">CLICK</button>
+        
+        <div class="wire-2" id="wire2"></div>
+        
+        <div class="bulb" id="bulb">
+          <span class="bulb-icon">⚡</span>
+        </div>
+        
+        <div class="wire-3" id="wire3"></div>
+      </div>
+
+      <div class="instruction">
+        👆 Click the red button to complete the circuit! 👆
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 2: Birthday Message -->
+  <div id="page2" class="page">
+    <div id="bg-container"></div>
+    <div id="emoji-container"></div>
+    
+    <div class="birthday-card">
+      <div class="success-badge">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <p class="success-text">Circuit Complete! ⚡</p>
+
+      <h1 class="main-title">🎉 Happy Birthday 🎉</h1>
+      <h2 class="name">Sushil Liz liz! 🎂</h2>
+
+      <div class="message-box">
+        <p class="message">
+          Even when life throws <span class="highlight-yellow">short circuits</span>,<br>
+          you always find the <span class="highlight-green">right connection</span>.<br><br>
+          Stay <span class="highlight-pink">brilliant</span>, and never stop<br>
+          <span class="highlight-purple">energizing</span> everyone around you.
+        </p>
+        <p class="heart">⚡❤️</p>
+      </div>
+
+      <div class="special-message">
+        <p>Hope the algorithm works this year for you... 🎯✨</p>
+      </div>
+
+      <div class="emoji-row">
+        🎈🎁🎊🎉🎂
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const switchBtn = document.getElementById('switch');
+    const wire2 = document.getElementById('wire2');
+    const wire3 = document.getElementById('wire3');
+    const bulb = document.getElementById('bulb');
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      document.body.appendChild(confetti);
+
+      const emojis = ['🎉', '🎊', '✨', '🎈', '🎁', '⭐'];
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+        confetti.appendChild(piece);
+      }
+
+      setTimeout(() => confetti.remove(), 3000);
+    }
+
+    function createBackgroundBlobs() {
+      const container = document.getElementById('bg-container');
+      for (let i = 0; i < 20; i++) {
+        const blob = document.createElement('div');
+        blob.className = 'blob';
+        const size = Math.random() * 200 + 100;
+        blob.style.width = size + 'px';
+        blob.style.height = size + 'px';
+        blob.style.left = Math.random() * 100 + '%';
+        blob.style.top = Math.random() * 100 + '%';
+        blob.style.background = `linear-gradient(${Math.random() * 360}deg, #fbbf24, #ec4899, #8b5cf6)`;
+        blob.style.animationDelay = Math.random() * 3 + 's';
+        blob.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        container.appendChild(blob);
+      }
+    }
+
+    function createFloatingEmojis() {
+      const container = document.getElementById('emoji-container');
+      const emojis = ['⚡', '💡', '🔌', '⭐', '✨', '🎊'];
+      for (let i = 0; i < 15; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'floating-emoji';
+        emoji.textContent = emojis[i % 6];
+        emoji.style.left = ((i * 7) % 100) + '%';
+        emoji.style.top = ((i * 13) % 100) + '%';
+        emoji.style.animationDelay = (i * 0.3) + 's';
+        emoji.style.animationDuration = (3 + (i % 3)) + 's';
+        container.appendChild(emoji);
+      }
+    }
+
+    switchBtn.addEventListener('click', function() {
+      if (this.classList.contains('on')) return;
+      
+      this.classList.add('on');
+      this.textContent = 'ON';
+      wire2.classList.add('active');
+      wire3.classList.add('active');
+      bulb.classList.add('lit');
+      
+      createConfetti();
+      
+      setTimeout(() => {
+        page1.classList.remove('active');
+        page2.classList.add('active');
+        createBackgroundBlobs();
+        createFloatingEmojis();
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
